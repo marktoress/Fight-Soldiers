@@ -1,0 +1,22 @@
+div {
+	width: 50%;
+	display: inline-block;
+	margin: auto;
+	text-align: center;
+}
+table {
+	width: 90%;
+	margin: auto;
+	margin-bottom: 20px;
+	border-collapse: collapse;
+}
+tr, td, th {
+	border: 1px solid black;
+}
+.Terrs {
+	background-color: lightblue;
+	float: left;
+}
+.Rus {
+	background-color: lime;
+}
