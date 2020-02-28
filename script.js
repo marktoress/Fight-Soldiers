@@ -118,3 +118,33 @@ function GetStatus(status) {
 		return "Убит";
 	}
 } 
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+function Fight(terr, rus) {
+	while(terr.isAlive && rus.isAlive) {
+		var terrDmg = terr.damage + Math.floor(Math.random()*21);
+		var rusDmg = rus.damage + Math.floor(Math.random()*21);
+		terr.hp -= rusDmg;
+		rus.hp -= terrDmg;
+
+		var p = document.createElement("p");
+		p.innerText = `${terr.name} нанес ${terrDmg} урона. ${rus.name} нанес ${rusDmg} урона.`;
+		document.querySelector(".main").appendChild(p);
+		if(terr.hp <= 0) {
+			terr.isAlive = false;
+		}
+		if(rus.hp <= 0) {
+			rus.isAlive = false;
+		}
+	}
+	if(terr.isAlive) {
+		console.log("Русский солдат убит");
+	}
+	else {
+		console.log("Террорист убит");
+	}
+}
+
+//--------------------------------------------------------------//
+//Написать сам сценарий боя
