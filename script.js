@@ -14,7 +14,7 @@ function GetSoldier(n, r) {
 	hp: 100,
 	damage: 12, // урон 
 	kills: 0,   // счетчик убийств
-	isAlive: true  // статус : живой - мертвый
+	isAlive: true  // статус : живой - убит 
 	};
 	return soldier;     
 }
@@ -29,89 +29,41 @@ for(var i = 0; i < 10; i++) {
 
 
 // ------------------------------------------
+ 
+ // добавление в таблицу свойств войнов
+
+ function GetCell(properties, row) {
+ 	var td = document.createElement("td");
+ 	td.innerText = properties;
+ 	row.appendChild(td);
+ }
 
 for(var i = 0; i < 10; i++) {
 	var tr = document.createElement('tr');
 
-	var td1 = document.createElement('td');
-	td1.innerText = Terr[i].name;
-	tr.appendChild(td1);
-
-	var td2 = document.createElement('td');
-	td2.innerText = Terr[i].rang;
-	tr.appendChild(td2);	
-
-
-	var td3 = document.createElement('td');
-	td3.innerText = Terr[i].hp;
-	tr.appendChild(td3);
-
-	var td4 = document.createElement('td');
-	td4.innerText = Terr[i].damage;
-	tr.appendChild(td4);
-
-
-	var td5 = document.createElement('td');
-	td5.innerText = Terr[i].kills;
-	tr.appendChild(td5);
-
-	var td6 = document.createElement('td');
-	if(Terr[i].isAlive) {
-		td6.style.backgroundColor = "black";
-		td6.style.color = "orange";
-	}
-	else {
-		td6.style.backgroundColor = "black";
-		td6.style.color = "red";	
-	}
-	td6.innerText = GetStatus(Terr[i].isAlive);
-	tr.appendChild(td6);
+	GetCell(Terr[i].name, tr);
+	GetCell(Terr[i].rang, tr);
+	GetCell(Terr[i].hp, tr);
+	GetCell(Terr[i].damage, tr);
+	GetCell(Terr[i].kills, tr);
+	GetCell(GetStatus(Terr[i].isAlive), tr);
 
 	document.getElementById('first').appendChild(tr);
 
-// :::::::::::::::::::::::::::::::::::::::::::::::::::::
+	var tr1 = document.createElement("tr");
 
-	var tr1 = document.createElement('tr');
-
-	var td1 = document.createElement('td');
-	td1.innerText = Rus[i].name;
-	tr1.appendChild(td1);
-
-	var td2 = document.createElement('td');
-	td2.innerText = Rus[i].rang;
-	tr1.appendChild(td2);	
-
-
-	var td3 = document.createElement('td');
-	td3.innerText = Rus[i].hp;
-	tr1.appendChild(td3);
-
-	var td4 = document.createElement('td');
-	td4.innerText = Rus[i].damage;
-	tr1.appendChild(td4);
-
-
-	var td5 = document.createElement('td');
-	td5.innerText = Rus[i].kills;
-	tr1.appendChild(td5);
-
-	var td6 = document.createElement('td');
-	if(Rus[i].isAlive) {
-		td6.style.backgroundColor = "black";
-		td6.style.color = "orange";
-	}
-	else {
-		td6.style.backgroundColor = "black";
-		td6.style.color = "red";	
-	}
-	td6.innerText = GetStatus(Rus[i].isAlive);
-	tr1.appendChild(td6);
-
+	GetCell(Rus[i].name, tr1);
+	GetCell(Rus[i].rang, tr1);
+	GetCell(Rus[i].hp, tr1);
+	GetCell(Rus[i].damage, tr1);
+	GetCell(Rus[i].kills, tr1);
+	GetCell(GetStatus(Rus[i].isAlive), tr1);
+	
 	document.getElementById('second').appendChild(tr1);
 }
 
 function GetStatus(status) {
-	if(status) {
+	if (status) {
 		return "Живой";
 	}
 	else {
@@ -119,24 +71,46 @@ function GetStatus(status) {
 	}
 } 
 
+
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
 function Fight(terr, rus) {
+
+	var fate = Math.floor(Math.random()*101);
+	var fighter1, fighter2;
+
+	if(fate <= 50) {
+		fighter1 = terr;
+		fighter2 = rus;
+	}
+	else {
+		fighter1 = rus;
+		fighter2 = terr;
+	}
+
 	while(terr.isAlive && rus.isAlive) {
-		var terrDmg = terr.damage + Math.floor(Math.random()*21);
-		var rusDmg = rus.damage + Math.floor(Math.random()*21);
-		terr.hp -= rusDmg;
-		rus.hp -= terrDmg;
+		var fighter1Dmg = fighter1.damage + Math.floor(Math.random()*21);
+		fighter2.hp -= fighter1Dmg;
+
+		if(fighter2.hp <= 0) {
+			fighter2.isAlive = false;
+			break;
+		}
+
+		var fighter2Dmg = fighter2.damage + Math.floor(Math.random()*21);
+		fighter1.hp -= fighter2Dmg;
+
+
+		if(fighter1.hp <= 0) {
+			fighter1.isAlive = false;
+			break;
+		}
 
 		var p = document.createElement("p");
-		p.innerText = `${terr.name} нанес ${terrDmg} урона. ${rus.name} нанес ${rusDmg} урона.`;
+		p.innerText = `${fighter1.name} нанес ${fighter1Dmg} урона. ${fighter2.name} нанес ${fighter2Dmg} урона.`;
 		document.querySelector(".main").appendChild(p);
-		if(terr.hp <= 0) {
-			terr.isAlive = false;
-		}
-		if(rus.hp <= 0) {
-			rus.isAlive = false;
-		}
+
+		
 	}
 	if(terr.isAlive) {
 		console.log("Русский солдат убит");
@@ -144,7 +118,13 @@ function Fight(terr, rus) {
 	else {
 		console.log("Террорист убит");
 	}
+	console.log(terr.hp + " " + rus.hp);
 }
 Fight(Terr[0],Rus[0]);
+
+
 //--------------------------------------------------------------//
 //Написать сам сценарий боя
+
+
+	
