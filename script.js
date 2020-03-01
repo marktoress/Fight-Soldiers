@@ -5,10 +5,12 @@ var rangsTerr = ["soldier","capral","leutenant","colonel","general"];
 var rangsRus = ["рядовой","сержант","лейтенант","полковник","генерал"];
 
 
+
 function GetSoldier(n, r) {
 	var soldier = {
 	name: n,
 	rang: r,
+	// эти параметры не изменятся
 	hp: 100,
 	damage: 12, // урон 
 	kills: 0,   // счетчик убийств
@@ -17,16 +19,14 @@ function GetSoldier(n, r) {
 	return soldier;     
 }
 
+// :::::::::::::::::::::::::::::::::::::::::::::::: 
 var Terr = [];
+var Rus = [];
 for(var i = 0; i < 10; i++) {
 	Terr[i] = GetSoldier(nameTerr[i],rangsTerr[0]);
+	Rus[i] = GetSoldier(nameRus[i],rangsRus[0]);
 }
 
-
-var Rus = [];
-for(var j = 0; j < 10; j++) {
-	Rus[j] = GetSoldier(nameRus[j],rangsRus[0]);
-}
 
 // ------------------------------------------
 
@@ -145,6 +145,6 @@ function Fight(terr, rus) {
 		console.log("Террорист убит");
 	}
 }
-
+Fight(Terr[0],Rus[0]);
 //--------------------------------------------------------------//
 //Написать сам сценарий боя
