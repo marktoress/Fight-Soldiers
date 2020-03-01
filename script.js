@@ -4,13 +4,12 @@ var nameRus = ["Вася","Ваня","Петя","Борис","Сергей","С�
 var rangsTerr = ["soldier","capral","leutenant","colonel","general"];
 var rangsRus = ["рядовой","сержант","лейтенант","полковник","генерал"];
 
-
+var result = document.getElementById('result');
 
 function GetSoldier(n, r) {
 	var soldier = {
 	name: n,
 	rang: r,
-	// эти параметры не изменятся
 	hp: 100,
 	damage: 12, // урон 
 	kills: 0,   // счетчик убийств
@@ -30,7 +29,6 @@ for(var i = 0; i < 10; i++) {
 
 // ------------------------------------------
  
- // добавление в таблицу свойств войнов
 
  function GetCell(properties, row) {
  	var td = document.createElement("td");
@@ -71,7 +69,7 @@ function GetStatus(status) {
 	}
 } 
 
-
+var fighter1Dmg, fighter2Dmg;
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
 function Fight(terr, rus) {
@@ -88,43 +86,85 @@ function Fight(terr, rus) {
 		fighter2 = terr;
 	}
 
-	while(terr.isAlive && rus.isAlive) {
-		var fighter1Dmg = fighter1.damage + Math.floor(Math.random()*21);
+	var paragraphs = document.getElementsByTagName('p');
+	for(var i = 0;  i < paragraphs.length; i++) {
+		document.querySelector(".main").removeChild(paragraphs[i]);
+	}
+
+	while(fighter1.isAlive && fighter2.isAlive) {
+		fighter1Dmg = fighter1.damage + Math.floor(Math.random()*21);
 		fighter2.hp -= fighter1Dmg;
 
 		if(fighter2.hp <= 0) {
 			fighter2.isAlive = false;
+			fighter1.hp += 50;
 			break;
 		}
 
-		var fighter2Dmg = fighter2.damage + Math.floor(Math.random()*21);
+		fighter2Dmg = fighter2.damage + Math.floor(Math.random()*21);
 		fighter1.hp -= fighter2Dmg;
 
 
 		if(fighter1.hp <= 0) {
 			fighter1.isAlive = false;
+			fighter2.hp += 50;
 			break;
 		}
 
 		var p = document.createElement("p");
-		p.innerText = `${fighter1.name} нанес ${fighter1Dmg} урона. ${fighter2.name} нанес ${fighter2Dmg} урона.`;
-		document.querySelector(".main").appendChild(p);
+		p.innerText = `${fighter1.name}(${fighter1.hp}) нанес ${fighter1Dmg} урона. ${fighter2.name}(${fighter2.hp}) нанес ${fighter2Dmg} урона.`;
+		var h = document.getElementById("result"); 
+		document.querySelector(".main").insertBefore(p,h);
 
-		
+		fighter1Dmg = fighter2Dmg = 0;
 	}
 	if(terr.isAlive) {
-		console.log("Русский солдат убит");
+		document.querySelector('#result').innerText = `Террорист ${terr.name} убил солдата.`;
 	}
 	else {
-		console.log("Террорист убит");
+		document.querySelector('#result').innerText = `Солдат ${rus.name} убил террориста.`;
 	}
-	console.log(terr.hp + " " + rus.hp);
 }
-Fight(Terr[0],Rus[0]);
 
 
 //--------------------------------------------------------------//
-//Написать сам сценарий боя
 
 
+
+function StayAlive(team) {
+	for(var i = 0; i < 10; i++) {
+		if(team[i].isAlive) {
+			return true;
+		}
+	}
+	return false;
+}	
+
+var coin1, coin2;
+
+
+function War() {
+
+	while(true) { // поиск живого бойца из терров
+		coin1 = Math.floor(Math.random()*10);
+		if(Terr[coin1].isAlive == true) { // если этот боец живой, то поиск прекращается 
+			break;
+		}	
+	}
 	
+	while(true) {
+		coin2 = Math.floor(Math.random()*10);
+		if(Rus[coin2].isAlive == true) {
+			break;
+		}
+	}
+
+	Fight(Terr[coin1], Rus[coin2]);
+
+	if(StayAlive(Terr) == false || StayAlive(Rus) == false) {
+		clearInterval(stopWar);
+	}
+
+} 
+
+var stopWar = setInterval(War, 1500);
