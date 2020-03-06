@@ -69,7 +69,7 @@
 			return "Живой";
 		}
 		else {
-			return "Убит";
+			return "Погиб";
 		}
 	} 
 
@@ -87,7 +87,13 @@
 			var changeHp = document.querySelector(id).childNodes[index + 2].children[2];
 			changeHp.innerText = fighter.hp;
 			var statusCell = document.querySelector(id).childNodes[index + 2].children[5];
-			statusCell.innerText = GetStatus(fighter.isAlive);
+			if(fighter.isAlive == false) {
+				statusCell.style.backgroundColor = "red";
+				statusCell.style.color = "black";
+				statusCell.style.fontWeight = "bold";	
+				statusCell.innerText = GetStatus(fighter.isAlive);
+			}	
+			statusCell.innerText = GetStatus(fighter.isAlive);	
 	}
 
 
@@ -129,13 +135,13 @@
 			ChangeProperty('#second', rusSold, nameRus);
 
 			if(fighter2.hp <= 0) {
-				fighter2.isAlive = false;
+				fighter2.isAlive = status = false;
 				fighter1.hp += 50;
 				break;
 			}
 
 			if(fighter1.hp <= 0) {
-				fighter1.isAlive = false;
+				fighter1.isAlive = status = false;
 				fighter2.hp += 50;
 				break;
 			}	
