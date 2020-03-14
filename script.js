@@ -2,8 +2,8 @@
 	var nameTerr = ["John","Jack","Andrew","Arnold","Micle","Tom","Jeremi","Bob","Sebastian","Mick"];
 	var nameRus = ["Вася","Ваня","Петя","Борис","Сергей","Слава","Яша","Коля","Толя","Саня"];
 
-	var rangsTerr = ["soldier","capral","leutenant","colonel","general"];
-	var rangsRus = ["рядовой","сержант","лейтенант","полковник","генерал"];
+	var rangsTerr = ["Soldier","Capral","Sergeant","Master-Sergeant","Sergeant-Major","Leutenant","Colonel","General"];
+	var rangsRus = ["Рядовой","Сержант","Лейтенант","Капитан","Майор","Подполковник","Полковник","Генерал"];
 
 	var result = document.getElementById('result');
 
@@ -24,9 +24,6 @@
 	var Rus = [];
 	for(var i = 0; i < 10; i++) {
 		Terr[i] = GetSoldier(nameTerr[i],rangsTerr[0]);
-		if(Terr[i].name == "John") {
-			Terr[i].damage = 17;
-		}
 		Rus[i] = GetSoldier(nameRus[i],rangsRus[0]);
 	}
 
@@ -88,12 +85,26 @@
 			changeHp.innerText = fighter.hp;
 			var statusCell = document.querySelector(id).childNodes[index + 2].children[5];
 			if(fighter.isAlive == false) {
-				statusCell.style.backgroundColor = "red";
+				statusCell.parentNode.style.backgroundColor = "red";
 				statusCell.style.color = "black";
 				statusCell.style.fontWeight = "bold";	
 				statusCell.innerText = GetStatus(fighter.isAlive);
 			}	
 			statusCell.innerText = GetStatus(fighter.isAlive);	
+			var changeKills = document.querySelector(id).childNodes[index + 2].children[4];
+			if(fighter.kills > 0) {
+				changeKills.style.backgroundColor = "orange";
+				changeKills.style.color = "black";
+				changeKills.style.fontWeight = "bold";
+				changeKills.innerText = fighter.kills;
+
+				var changeRang = document.querySelector(id).childNodes[index + 2].children[1];
+				changeRang.style.backgroundColor = "lightpink";
+				changeRang.style.color = "black";
+				changeRang.style.fontWeight = "bold";
+				changeRang.innerText = fighter.rang;
+			}
+			
 	}
 
 
@@ -120,40 +131,59 @@
 			document.querySelector(".main").removeChild(paragraphs[i]);
 		}
 
+		Duel(fighter1, fighter2);
 
+		function Duel(fighter1, fighter2) {
+			if(fighter1.isAlive && fighter2.isAlive) {
 
-		while(fighter1.isAlive && fighter2.isAlive) {
+					fighter1Dmg = fighter1.damage + Math.floor(Math.random()*21);
+					fighter2.hp -= fighter1Dmg;
+				
+					if(fighter2.hp <= 0) {
+						console.log(" 1 Внутри проверки");
+						fighter2.isAlive = false;
+						fighter1.hp += 50;
+						fighter1.kills += 1;
+						fighter1.damage += 5;
+						fighter1.rang = GetRang(nameTerr, nameRus, fighter1);
+						ChangeProperty('#first', terr, nameTerr);	
+						ChangeProperty('#second', rusSold, nameRus);
+						return;
+					}
 
-			fighter1Dmg = fighter1.damage + Math.floor(Math.random()*21);
-			fighter2.hp -= fighter1Dmg;
-		
-			fighter2Dmg = fighter2.damage + Math.floor(Math.random()*21);
-			fighter1.hp -= fighter2Dmg;
+					fighter2Dmg = fighter2.damage + Math.floor(Math.random()*21);
+					fighter1.hp -= fighter2Dmg;
 
-		
-			ChangeProperty('#first', terr, nameTerr);	
-			ChangeProperty('#second', rusSold, nameRus);
+					if(fighter1.hp <= 0) {
+						console.log(" 2 Внутри проверки");
+						fighter1.isAlive = false;
+						fighter2.hp += 50;
+						fighter2.damage += 5;
+						fighter2.kills += 1;
+						fighter2.rang = GetRang(nameTerr, nameRus, fighter2);
+						ChangeProperty('#first', terr, nameTerr);	
+						ChangeProperty('#second', rusSold, nameRus);
+						return;
+					}
 
-			if(fighter2.hp <= 0) {
-				fighter2.isAlive = status = false;
-				fighter1.hp += 50;
-				break;
+					ChangeProperty('#first', terr, nameTerr);	
+					ChangeProperty('#second', rusSold, nameRus);
+
+					var p = document.createElement("p");
+					p.innerText = `${fighter1.name}(${fighter1.hp}) нанес ${fighter1Dmg} урона. ${fighter2.name}(${fighter2.hp}) нанес ${fighter2Dmg} урона.`;
+					var h = document.getElementById("result"); 
+					document.querySelector(".main").insertBefore(p,h);
+
+					fighter1Dmg = fighter2Dmg = 0;
+					setTimeout(function() {Duel(fighter1, fighter2)}, 2000);
 			}
-
-			if(fighter1.hp <= 0) {
-				fighter1.isAlive = status = false;
-				fighter2.hp += 50;
-				break;
+			else {
+				return;
 			}	
-
-			var p = document.createElement("p");
-			p.innerText = `${fighter1.name}(${fighter1.hp}) нанес ${fighter1Dmg} урона. ${fighter2.name}(${fighter2.hp}) нанес ${fighter2Dmg} урона.`;
-			var h = document.getElementById("result"); 
-			document.querySelector(".main").insertBefore(p,h);
 		}
-
-		ChangeProperty('#first', terr, nameTerr);
-		ChangeProperty('#second', rusSold, nameRus);
+		
+		// ChangeProperty('#first', terr, nameTerr);
+		// ChangeProperty('#second', rusSold, nameRus);
 
 		if(terr.isAlive) {
 			document.querySelector('#result').innerText = `Террорист ${terr.name} убил солдата.`;
@@ -161,13 +191,9 @@
 		else {
 			document.querySelector('#result').innerText = `Солдат ${rusSold.name} убил террориста.`;
 		}	
-	}
-
-		
+	}	
 
 	//--------------------------------------------------------------//
-
-
 
 	function StayAlive(team) {
 		for(var i = 0; i < 10; i++) {
@@ -201,20 +227,29 @@
 
 		if(StayAlive(Terr) == false || StayAlive(Rus) == false) {
 			clearInterval(stopWar);
+			console.log("Война окончена");
 		}
 
 	} 
 
-	var stopWar = setInterval(War, 1500);
+	var stopWar = setInterval(War, 4500);
 
 
-// вывести в таблицу обнову после Fight(_)
-
-// строка табл погибшего юнита должна окр в красный  
 function GetIndexSoldier(names, name) {
 	for(var i = 0; i < names.length; i++) {
 		if(name == names[i]) {
 			return i;
+		}
+	}
+}
+
+function GetRang(namesT, namesR, unit) {
+	for (var i = 0; i < namesT.length; i++) {
+		if (unit.name == namesT[i]) {
+			return rangsTerr[unit.kills];
+		}
+		if (unit.name == namesR[i]) {
+			return rangsRus[unit.kills];
 		}
 	}
 }
